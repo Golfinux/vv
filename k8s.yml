@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: v2ray
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: v2ray
+  template:
+    metadata:
+      labels:
+        app: v2ray
+    spec:
+      containers:
+      - image: kuanfinn/caddyandv:oqr
+        name: v2ray
+        ports:
+        - name : "v2ray"
+          containerPort: 8080
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: v2ray
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  type: ClusterIP  
+  ports:
+  - name: "v2ray"
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: v2ray
